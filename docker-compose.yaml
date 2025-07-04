@@ -1,0 +1,28 @@
+services:
+  llama:
+    build:
+      context: ./llama-server
+    # if you ever need to override the default MODEL_URL:
+    # args:
+    #   MODEL_URL: "https://model.lmstudio.ai/download/.../Your-New-Model.gguf"
+    image: llama-server:latest
+    ports:
+      - "8000:8000"
+
+  backend:
+    build: ./backend
+    image: llm-backend:latest
+    depends_on:
+      - llama
+    environment:
+      LLM_URL: http://llama:8000
+    ports:
+      - "8001:8001"
+
+  frontend:
+    build: ./frontend
+    image: llm-frontend:latest
+    depends_on:
+      - backend
+    ports:
+      - "8501:8501"
